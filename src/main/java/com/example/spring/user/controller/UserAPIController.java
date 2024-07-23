@@ -26,7 +26,7 @@ public class UserAPIController {
     private static final String HEADER_NULL = "헤더가 존재하지 않습니다.";
     private static final String SESSION_NULL_FAILURE = "세션이 존재하지 않습니다.";
 
-    private static final String SESSION_LOGIN_INFO_NULL = "로그인 정보가 존재하지 않습니다";
+    //private static final String SESSION_LOGIN_INFO_NULL = "로그인 정보가 존재하지 않습니다";
 
     private static final String NOT_ID_EXIST = "해당 아이디를 가진 회원이 존재하지 않습니다.";
 
@@ -87,6 +87,18 @@ public class UserAPIController {
             }
         } else {
             return new ResponseEntity<>(HEADER_NULL, HttpStatus.BAD_REQUEST);   // 헤더가 존재하지 않음
+        }
+    }
+
+    // 사용자 정보 업데이트
+    @PostMapping("users/update")
+    public ResponseEntity Update(@RequestBody UserUpdateFormDTO userUpdateFormDTO , HttpServletRequest request){
+        String authHeader = request.getHeader("Authorization"); // 요청한 유저의 세션 ID
+
+        if(authHeader!=null && authHeader.startsWith("Bearer ")){   // 로그인한 유저의 정보가 있다면
+            return userService.update(userUpdateFormDTO , request); // update 로직 수행
+        }else{
+            return new ResponseEntity<>(HEADER_NULL , HttpStatus.BAD_REQUEST);  // 로그인 정보가 없으면
         }
     }
 

@@ -27,7 +27,7 @@ public class SecurityConfig{
         http
                 .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
                 .authorizeHttpRequests(authorize -> authorize   // Http에 대한 인가규칙 설정
-                        .requestMatchers("/api/users/create" , "api/users/login" , "api/users/logout").permitAll() //경로에 대한 접근을 모든 사용자에게 허용한다.
+                        .requestMatchers("/api/users/create" , "api/users/login" , "api/users/logout" , "api/users/update").permitAll() //경로에 대한 접근을 모든 사용자에게 허용한다.
                         .anyRequest().authenticated() // 나머지 모든 요청은 인증이 필요하다
                 );
         return http.build();
