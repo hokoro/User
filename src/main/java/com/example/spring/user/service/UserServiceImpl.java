@@ -4,6 +4,7 @@ package com.example.spring.user.service;
 import com.example.spring.user.domain.User;
 import com.example.spring.user.dto.SignUpFormDTO;
 import com.example.spring.user.dto.UserDeleteFormDTO;
+import com.example.spring.user.dto.UserDetailFormDTO;
 import com.example.spring.user.dto.UserUpdateFormDTO;
 import com.example.spring.user.repository.UserLoginRepository;
 import com.example.spring.user.repository.UserRepository;
@@ -39,6 +40,10 @@ public class UserServiceImpl implements UserService {
     private static final String DELETE_SUCCESS = "정상 탈퇴";
 
     private static final String DELETE_FAILURE = "회원 정보가 없습니다";
+
+    private static final String DETAIL_SUCCESS = "요청하신 회원정보입니다.";
+
+    private static final String DETAIL_FAILURE = "회원정보가 없습니다.";
     // 유효성 검사
     private static final String NULL_FAILURE = "유효하지 않은 입력입니다.";
     private static final String BLANK_FAILURE = "회원 정보를 입력해주세요";
@@ -132,6 +137,27 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    // 유저 정보 상세보기
+    @Override
+    public ResponseEntity<UserDetailFormDTO> detail(HttpServletRequest request){
+        String authHeader = request.getHeader("Authorization"); // 요청한 유저의 세션 ID
 
+        String token = authHeader.substring(7); // Bearer 제외한 나머지 세션 ID 부분
+
+        String LoginId = userLoginRepository.findUserIdByToken(token).toString();   // 토큰값과 일치한 유저 아이디 조회
+
+        LoginId = LoginId.replaceAll("[\\[\\]]", "");  // 대괄호 제거
+
+        System.out.println(LoginId);
+        Optional<User> member = userRepository.findById(LoginId);
+        User user = member.orElse(null);
+
+        if(user != null){
+            return new ResponseEntity<>(new UserDetailFormDTO(DETAIL_SUCCESS , user.getId() , user.getName()) , HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(new UserDetailFormDTO(DETAIL_FAILURE , null , null) , HttpStatus.NOT_FOUND);
+        }
+
+    }
 
 }

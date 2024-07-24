@@ -2,6 +2,7 @@ package com.example.spring.user.service.interfaces;
 
 import com.example.spring.user.dto.SignUpFormDTO;
 import com.example.spring.user.dto.UserDeleteFormDTO;
+import com.example.spring.user.dto.UserDetailFormDTO;
 import com.example.spring.user.dto.UserUpdateFormDTO;
 import org.springframework.http.ResponseEntity;
 import jakarta.servlet.http.*;
@@ -10,7 +11,8 @@ public interface UserService {  // User Service에 대한 인터페이스
 
     ResponseEntity update(UserUpdateFormDTO formDTO , HttpServletRequest request);   // 인터페이스 유저 정보 업데이트
 
-
     ResponseEntity delete(UserDeleteFormDTO formDTO, HttpServletRequest request);
+
+    ResponseEntity<UserDetailFormDTO> detail(HttpServletRequest request);
 
 }

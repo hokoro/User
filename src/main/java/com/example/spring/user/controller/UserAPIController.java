@@ -116,4 +116,16 @@ public class UserAPIController {
 
     }
 
+    // 사용자 정보 보기
+    @GetMapping("users/detail")
+    public ResponseEntity Detail(HttpServletRequest request){
+        String authHeader = request.getHeader("Authorization"); // 요청한 유저의 세션 ID
+
+        if(authHeader!=null && authHeader.startsWith("Bearer ")){       // 세션 ID가 존재한다면 = 로그인 상태
+            return userService.detail(request);
+        }else{
+            return new ResponseEntity<>(HEADER_NULL , HttpStatus.BAD_REQUEST);  // 로그인 정보가 없으면
+        }
+    }
+
 }
