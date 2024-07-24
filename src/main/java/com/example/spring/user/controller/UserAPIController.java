@@ -91,7 +91,7 @@ public class UserAPIController {
     }
 
     // 사용자 정보 업데이트
-    @PostMapping("users/update")
+    @PutMapping("users/update")
     public ResponseEntity Update(@RequestBody UserUpdateFormDTO userUpdateFormDTO , HttpServletRequest request){
         String authHeader = request.getHeader("Authorization"); // 요청한 유저의 세션 ID
 
@@ -100,6 +100,20 @@ public class UserAPIController {
         }else{
             return new ResponseEntity<>(HEADER_NULL , HttpStatus.BAD_REQUEST);  // 로그인 정보가 없으면
         }
+    }
+
+    // 사용자 정보 삭제
+    @DeleteMapping("users/delete")
+    public ResponseEntity Delete(@RequestBody UserDeleteFormDTO userDeleteFormDTO, HttpServletRequest request){
+        String authHeader = request.getHeader("Authorization"); // 요청한 유저의 세션 ID
+
+        if(authHeader!=null && authHeader.startsWith("Bearer ")){       // 세션 ID가 존재한다면 = 로그인 상태
+            return userService.delete(userDeleteFormDTO , request);
+        }else{
+            return new ResponseEntity<>(HEADER_NULL , HttpStatus.BAD_REQUEST);  // 로그인 정보가 없으면
+
+        }
+
     }
 
 }

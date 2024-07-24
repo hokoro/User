@@ -2,8 +2,8 @@ package com.example.spring.user.service;
 
 
 import com.example.spring.user.domain.User;
-import com.example.spring.user.dto.LoginFormDTO;
 import com.example.spring.user.dto.SignUpFormDTO;
+import com.example.spring.user.dto.UserDeleteFormDTO;
 import com.example.spring.user.dto.UserUpdateFormDTO;
 import com.example.spring.user.repository.UserLoginRepository;
 import com.example.spring.user.repository.UserRepository;
@@ -28,13 +28,17 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserLoginRepository userLoginRepository;
 
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();    // 비밀번호 데이터를 암호화 하기 위해 사용
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();    // 비밀번호 데이터를 암호화 하기 위해 사용
 
     // 응답 메세지 상수화
     private static final String SIGNUP_SUCCESS = "회원가입 성공";
     private static final String SIGNUP_FAILURE = "회원가입 실패 이미 존재하는 ID입니다.";
 
     private static final String UPDATE_SUCCESS = "회원 정보가 성공적으로 업데이트 되었습니다";
+
+    private static final String DELETE_SUCCESS = "정상 탈퇴";
+
+    private static final String DELETE_FAILURE = "회원 정보가 없습니다";
     // 유효성 검사
     private static final String NULL_FAILURE = "유효하지 않은 입력입니다.";
     private static final String BLANK_FAILURE = "회원 정보를 입력해주세요";
@@ -75,7 +79,6 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    @Transactional
     public ResponseEntity update(UserUpdateFormDTO userUpdateFormDTO ,HttpServletRequest request){
         
         String authHeader = request.getHeader("Authorization"); // 요청한 유저의 세션 ID
@@ -101,7 +104,31 @@ public class UserServiceImpl implements UserService {
         }else{  // 사용자가 존재하지 않을경우
             return new ResponseEntity<>(NOT_FIND_USER , HttpStatus.NOT_FOUND);
         }
+    }
 
+
+    @Override
+    public ResponseEntity delete(UserDeleteFormDTO userDeleteFormDTO , HttpServletRequest request){
+        String authHeader = request.getHeader("Authorization"); // 요청한 유저의 세션 ID
+
+        String token = authHeader.substring(7);  // "Bearer  을 제외한 나머지 토큰값"
+
+        String LoginId = userLoginRepository.findUserIdByToken(token).toString();   // 토큰값과 일치한 유저 아이디 조회
+
+        LoginId = LoginId.replaceAll("[\\[\\]]", "");   // 대괄호 제거 -> 불일치 에러가 발생함
+
+        if(!Objects.equals(LoginId, userDeleteFormDTO.getId())){    // 로그인한 ID와 DTO로 받은 ID가 일치하지 않을 경우
+            return new ResponseEntity<>(ID_NOT_EQUAL , HttpStatus.UNAUTHORIZED);
+        }
+
+        User user = userRepository.findById(userDeleteFormDTO.getId()).orElse(null);
+
+        if(user != null){
+            userRepository.delete(user);
+            return new ResponseEntity<>(DELETE_SUCCESS , HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(DELETE_FAILURE , HttpStatus.UNAUTHORIZED);
+        }
 
     }
 

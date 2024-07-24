@@ -13,5 +13,9 @@ public interface UserLoginRepository extends JpaRepository<UserLoginInfo , Strin
 
     @Query("SELECT u.id FROM UserLoginInfo u where u.token = :token")   // 쿼리문
     List<String> findUserIdByToken(@Param("token") String token);   // token 인자를 받아 사용자의 id를 가져오는 쿼리문
+
+
+
+
 }
 
