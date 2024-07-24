@@ -1,9 +1,7 @@
 package com.example.spring.user.domain;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -25,4 +23,8 @@ public class User {
 
     @Column(nullable = false) // Notnull 옵션 적용
     private String name;
+
+    // mappedBy -> Profile 엔티티가 user 필드의 관계의 주인이다. , cascadeType.ALL -> User가 삭제 되면 프로필도 자동으로 삭제 , FetchType-> 지연로딩 전력 사용
+    @OneToOne(mappedBy = "user" , cascade = CascadeType.ALL , fetch= FetchType.LAZY)
+    private Profile profile;
 }
