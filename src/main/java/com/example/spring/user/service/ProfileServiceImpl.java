@@ -11,7 +11,6 @@ import com.example.spring.user.service.interfaces.ProfileService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -40,6 +39,11 @@ public class ProfileServiceImpl implements ProfileService {
 
     private static final String CREATE_SUCCESS = "프로필 생성 성공";
     private static final String CREATE_FAILURE = "프로필 생성 실패";
+
+    // Detail 조회
+    private static final String DETAIL_SUCCESS = "프로필 조회 성공";
+
+    private static final String DETAIL_FAILURE = "프로필이 존재하지 않습니다.";
 
     private static final String IMAGE_UPLOAD_FAILURE = "이미지 업로드 실패";
 
@@ -103,6 +107,36 @@ public class ProfileServiceImpl implements ProfileService {
         }else{
             return new ResponseEntity<>(CREATE_FAILURE , HttpStatus.OK);
         }
+    }
+
+
+    @Override
+    public ResponseEntity detail(HttpServletRequest request){
+        String authHeader = request.getHeader("Authorization");
+
+        String token = authHeader.substring(7);
+
+        String LoginId = userLoginRepository.findUserIdByToken(token).toString();
+
+        LoginId = LoginId.replaceAll("[\\[\\]]", "");
+
+        User user = userRepository.findById(LoginId).orElse(null);
+
+
+        if(user == null){
+            return new ResponseEntity<>(ID_FAILURE , HttpStatus.NOT_FOUND);
+        }
+
+        Profile profile = profileRepository.findByProfileCustom(user);  // 프로필 정보 조회
+
+        if(profile != null){    // 프로필이 존재할경우
+            return new ResponseEntity<>(DETAIL_SUCCESS , HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(DETAIL_FAILURE , HttpStatus.OK);
+        }
+
+
+
     }
 
 }

@@ -39,4 +39,15 @@ public class ProfileAPIController {
         }
 
     }
+
+    @PostMapping("/profile/detail")
+    public ResponseEntity Detail(HttpServletRequest request){
+        String authHeader = request.getHeader("Authorization");
+
+        if(authHeader != null && authHeader.startsWith("Bearer ")){
+            return profileService.detail(request);
+        }else{
+            return new ResponseEntity<>(LOGIN_IN_FAILURE , HttpStatus.BAD_REQUEST);
+        }
+    }
 }

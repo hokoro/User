@@ -9,6 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface ProfileService {
     ResponseEntity create(MultipartFile multipartFile, ProfileCreateFormDTO profileCreateFormDTO , HttpServletRequest request);
 
-
+    ResponseEntity detail(HttpServletRequest request);
 
 }

@@ -13,4 +13,5 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     @Query("SELECT u FROM Profile u WHERE u.user = :user")
     Profile findByProfileCustom(@Param("user") User user);
+
 }
